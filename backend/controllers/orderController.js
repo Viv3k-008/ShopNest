@@ -20,7 +20,12 @@ const createOrder = async (req, res) => {
 
     const message = `Dear ${req.user.name},\n\nYour order has been successfully placed. Here are the details:\n\nOrder ID: ${order._id}\nTotal Price: $${order.totalPrice}\nPayment Method: ${order.paymentMethod}\n\nThank you for shopping with us!\n\nBest regards,\nShopNest Team`;
 
-    await sendEmail(req.user.email, message);
+    try {
+    await sendEmail(req.user.email, "Order Confirmation", message);
+    } catch (emailError) {
+    console.error("Email failed but order still succeeded:", emailError);
+    // Don't rethrow — let the order continue successfully
+    }
     res.status(201).json(order);
   } catch (error) {
     res.status(400).json({ message: error.message });
